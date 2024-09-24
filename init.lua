@@ -190,6 +190,48 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- Function to open a floating terminal
+local function open_floating_terminal()
+  -- Get the current buffer's width and height
+  local width = vim.api.nvim_get_option("columns")
+  local height = vim.api.nvim_get_option("lines")
+
+  -- Calculate the window size (80% of the screen)
+  local win_height = math.ceil(height * 0.8)
+  local win_width = math.ceil(width * 0.8)
+
+  -- Calculate the window position
+  local row = math.ceil((height - win_height) / 2 - 1)
+  local col = math.ceil((width - win_width) / 2)
+
+  -- Set up the window options
+  local opts = {
+    style = "minimal",
+    relative = "editor",
+    width = win_width,
+    height = win_height,
+    row = row,
+    col = col,
+    border = "rounded"
+  }
+
+  -- Create the floating window
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, opts)
+
+  -- Open terminal in the new window
+  vim.fn.termopen(vim.o.shell)
+
+  -- Enter insert mode
+  vim.cmd('startinsert')
+end
+
+-- Keybind to open floating terminal
+vim.keymap.set('n', '<leader>ft', open_floating_terminal, { noremap = true, silent = true, desc = 'Open floating terminal' })
+
+-- Keybind to exit terminal mode and close window
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { noremap = true, silent = true, desc = 'Exit terminal mode and close window' })
+
 -- Keybind to open .env file in the current directory
 vim.keymap.set('n', '<leader>V', function()
   local env_file = vim.fn.getcwd() .. '/.env'
