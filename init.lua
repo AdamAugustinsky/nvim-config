@@ -234,6 +234,9 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { noremap = true, silent 
 
 -- Keybind to open .env file in the current directory
 vim.keymap.set('n', '<leader>V', function()
+
+-- Keybind for commenting in visual mode
+vim.keymap.set('v', '<leader>/', '<Plug>(comment_toggle_linewise_visual)', { desc = 'Comment toggle linewise (visual)' })
   local env_file = vim.fn.getcwd() .. '/.env'
   if vim.fn.filereadable(env_file) == 1 then
     vim.cmd('edit ' .. env_file)
@@ -998,6 +1001,13 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   { import = 'custom.plugins' },
+
+  -- Add the Comment.nvim plugin
+  {
+    'numToStr/Comment.nvim',
+    opts = {},
+    lazy = false,
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
