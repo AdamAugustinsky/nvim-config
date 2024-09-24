@@ -635,6 +635,8 @@ require('lazy').setup({
             },
           },
         },
+
+        prismals = {}, -- Add Prisma Language Server
       }
 
       -- Ensure the servers and tools above are installed
@@ -652,6 +654,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'biome',
         'svelte-language-server',
+        'prisma-language-server', -- Add Prisma Language Server
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
