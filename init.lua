@@ -692,9 +692,18 @@ require('lazy').setup({
         },
 
         prismals = {}, -- Add Prisma Language Server
-
-        denols = {}, -- Add Deno Language Server
       }
+
+      -- Check if deno.json or deno.jsonc exists in the project root
+      local function deno_config_exists()
+        local root = vim.fn.getcwd()
+        return vim.fn.filereadable(root .. '/deno.json') == 1 or vim.fn.filereadable(root .. '/deno.jsonc') == 1
+      end
+
+      -- Add Deno Language Server only if deno config exists
+      if deno_config_exists() then
+        servers.denols = {}
+      end
 
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
@@ -712,8 +721,12 @@ require('lazy').setup({
         'biome',
         'svelte-language-server',
         'prisma-language-server', -- Add Prisma Language Server
-        'deno', -- Add Deno
       })
+      
+      -- Add Deno to ensure_installed only if deno config exists
+      if deno_config_exists() then
+        table.insert(ensure_installed, 'deno')
+      end
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {

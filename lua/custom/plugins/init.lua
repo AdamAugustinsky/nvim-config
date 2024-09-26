@@ -7,6 +7,16 @@ return {
     'pmizio/typescript-tools.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {},
+    config = function(_, opts)
+      local function deno_config_exists()
+        local root = vim.fn.getcwd()
+        return vim.fn.filereadable(root .. '/deno.json') == 1 or vim.fn.filereadable(root .. '/deno.jsonc') == 1
+      end
+
+      if not deno_config_exists() then
+        require('typescript-tools').setup(opts)
+      end
+    end,
   },
   {
     'kdheepak/lazygit.nvim',
