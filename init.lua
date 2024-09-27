@@ -778,21 +778,28 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        javascript = { 'biome' },
-        javascriptreact = { 'biome' },
-        typescript = { 'biome' },
-        typescriptreact = { 'biome' },
-        json = { 'biome' },
-        jsonc = { 'biome' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        --
-        --
       },
     },
+    config = function(_, opts)
+      local conform = require("conform")
+
+      -- Function to check if biome.json exists in the project root
+      local function biome_config_exists()
+        return vim.fn.filereadable(vim.fn.getcwd() .. '/biome.json') == 1
+      end
+
+      -- Conditionally add Biome formatter
+      if biome_config_exists() then
+        opts.formatters_by_ft.javascript = { 'biome' }
+        opts.formatters_by_ft.javascriptreact = { 'biome' }
+        opts.formatters_by_ft.typescript = { 'biome' }
+        opts.formatters_by_ft.typescriptreact = { 'biome' }
+        opts.formatters_by_ft.json = { 'biome' }
+        opts.formatters_by_ft.jsonc = { 'biome' }
+      end
+
+      conform.setup(opts)
+    end,
   },
 
   { -- Autocompletion
