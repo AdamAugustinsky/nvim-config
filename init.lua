@@ -193,8 +193,8 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- Function to open a floating terminal
 local function open_floating_terminal()
   -- Get the current buffer's width and height
-  local width = vim.api.nvim_get_option("columns")
-  local height = vim.api.nvim_get_option("lines")
+  local width = vim.api.nvim_get_option 'columns'
+  local height = vim.api.nvim_get_option 'lines'
 
   -- Calculate the window size (80% of the screen)
   local win_height = math.ceil(height * 0.8)
@@ -206,13 +206,13 @@ local function open_floating_terminal()
 
   -- Set up the window options
   local opts = {
-    style = "minimal",
-    relative = "editor",
+    style = 'minimal',
+    relative = 'editor',
     width = win_width,
     height = win_height,
     row = row,
     col = col,
-    border = "rounded"
+    border = 'rounded',
   }
 
   -- Create the floating window
@@ -223,7 +223,7 @@ local function open_floating_terminal()
   vim.fn.termopen(vim.o.shell)
 
   -- Enter insert mode
-  vim.cmd('startinsert')
+  vim.cmd 'startinsert'
 end
 
 -- Keybind to open floating terminal
@@ -234,14 +234,13 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { noremap = true, silent 
 
 -- Keybind to open .env file in the current directory
 vim.keymap.set('n', '<leader>V', function()
-
--- Keybind for commenting in visual mode
-vim.keymap.set('v', '<leader>/', '<Plug>(comment_toggle_linewise_visual)', { desc = 'Comment toggle linewise (visual)' })
+  -- Keybind for commenting in visual mode
+  vim.keymap.set('v', '<leader>/', '<Plug>(comment_toggle_linewise_visual)', { desc = 'Comment toggle linewise (visual)' })
   local env_file = vim.fn.getcwd() .. '/.env'
   if vim.fn.filereadable(env_file) == 1 then
     vim.cmd('edit ' .. env_file)
   else
-    print('.env file not found in the current directory')
+    print '.env file not found in the current directory'
   end
 end, { desc = 'Open .env file in current directory' })
 
@@ -659,6 +658,8 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+
+      local nvim_lsp = require 'lspconfig'
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -692,18 +693,10 @@ require('lazy').setup({
         },
 
         prismals = {}, -- Add Prisma Language Server
+        denols = {
+          root_dir = nvim_lsp.util.root_pattern('deno.json', 'deno.jsonc'),
+        },
       }
-
-      -- Check if deno.json or deno.jsonc exists in the project root
-      local function deno_config_exists()
-        local root = vim.fn.getcwd()
-        return vim.fn.filereadable(root .. '/deno.json') == 1 or vim.fn.filereadable(root .. '/deno.jsonc') == 1
-      end
-
-      -- Add Deno Language Server only if deno config exists
-      if deno_config_exists() then
-        servers.denols = {}
-      end
 
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
@@ -721,12 +714,9 @@ require('lazy').setup({
         'biome',
         'svelte-language-server',
         'prisma-language-server', -- Add Prisma Language Server
+        'deno',
       })
-      
-      -- Add Deno to ensure_installed only if deno config exists
-      if deno_config_exists() then
-        table.insert(ensure_installed, 'deno')
-      end
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
@@ -781,18 +771,12 @@ require('lazy').setup({
       },
     },
     config = function(_, opts)
-      local conform = require("conform")
+      local conform = require 'conform'
 
       -- Function to check if biome.json exists in the project root
       local function biome_config_exists()
         local biome_path = vim.fn.getcwd() .. '/biome.json'
-        local exists = vim.fn.filereadable(biome_path) == 1
-        if exists then
-          vim.notify("biome.json found at: " .. biome_path, vim.log.levels.INFO)
-        else
-          vim.notify("biome.json not found in the current directory", vim.log.levels.WARN)
-        end
-        return exists
+        return vim.fn.filereadable(biome_path) == 1
       end
 
       -- Conditionally add Biome formatter
@@ -803,9 +787,6 @@ require('lazy').setup({
         opts.formatters_by_ft.typescriptreact = { 'biome' }
         opts.formatters_by_ft.json = { 'biome' }
         opts.formatters_by_ft.jsonc = { 'biome' }
-        vim.notify("Biome formatter added for supported file types", vim.log.levels.INFO)
-      else
-        vim.notify("Biome formatter not added (biome.json not found)", vim.log.levels.WARN)
       end
 
       conform.setup(opts)
@@ -1065,3 +1046,5 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+--
