@@ -18,6 +18,9 @@ return {
           cterm = 244,
         },
         log_level = "info",
+        cmp = {
+          enabled = true, -- Enable cmp integration
+        },
       })
     end,
   },

@@ -905,6 +905,7 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'supermaven' }, -- Add Supermaven as a source
         },
       }
     end,
