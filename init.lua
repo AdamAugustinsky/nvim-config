@@ -715,7 +715,7 @@ require('lazy').setup({
         'svelte-language-server',
         'prisma-language-server', -- Add Prisma Language Server
         'deno',
-        'gopls', -- Add Go Language Server
+        'gopls', -- Ensure Go Language Server is installed
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
