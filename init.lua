@@ -785,7 +785,14 @@ require('lazy').setup({
 
       -- Function to check if biome.json exists in the project root
       local function biome_config_exists()
-        return vim.fn.filereadable(vim.fn.getcwd() .. '/biome.json') == 1
+        local biome_path = vim.fn.getcwd() .. '/biome.json'
+        local exists = vim.fn.filereadable(biome_path) == 1
+        if exists then
+          vim.notify("biome.json found at: " .. biome_path, vim.log.levels.INFO)
+        else
+          vim.notify("biome.json not found in the current directory", vim.log.levels.WARN)
+        end
+        return exists
       end
 
       -- Conditionally add Biome formatter
@@ -796,6 +803,9 @@ require('lazy').setup({
         opts.formatters_by_ft.typescriptreact = { 'biome' }
         opts.formatters_by_ft.json = { 'biome' }
         opts.formatters_by_ft.jsonc = { 'biome' }
+        vim.notify("Biome formatter added for supported file types", vim.log.levels.INFO)
+      else
+        vim.notify("Biome formatter not added (biome.json not found)", vim.log.levels.WARN)
       end
 
       conform.setup(opts)
