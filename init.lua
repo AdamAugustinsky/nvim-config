@@ -662,7 +662,7 @@ require('lazy').setup({
       local nvim_lsp = require 'lspconfig'
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -715,6 +715,7 @@ require('lazy').setup({
         'svelte-language-server',
         'prisma-language-server', -- Add Prisma Language Server
         'deno',
+        'gopls', -- Add Go Language Server
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
