@@ -677,6 +677,7 @@ require('lazy').setup({
 
         svelte = {},
         tailwindcss = {},
+        cssls = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -718,6 +719,7 @@ require('lazy').setup({
         'deno',
         'gopls', -- Ensure Go Language Server is installed
         'tailwindcss-language-server', -- Add Tailwind CSS Language Server
+        'css-lsp', -- Add CSS Language Server
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
