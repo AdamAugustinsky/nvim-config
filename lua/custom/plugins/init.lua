@@ -4,6 +4,18 @@
 -- See the kickstart.nvim README for more information
 return {
   {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { "markdown" },
+    keys = {
+      { "<leader>mp", "<cmd>MarkdownPreview<cr>", desc = "Markdown Preview" },
+    },
+  },
+  {
     "supermaven-inc/supermaven-nvim",
     config = function()
       require("supermaven-nvim").setup({
