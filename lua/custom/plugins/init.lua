@@ -4,18 +4,6 @@
 -- See the kickstart.nvim README for more information
 return {
   {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreview", "MarkdownPreviewStop" },
-    build = function() vim.fn["mkdp#util#install"]() end,
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-    end,
-    ft = { "markdown" },
-    keys = {
-      { "<leader>mp", "<cmd>MarkdownPreview<cr>", desc = "Markdown Preview" },
-    },
-  },
-  {
     "toppair/peek.nvim",
     event = { "VeryLazy" },
     build = "deno task --quiet build:fast",
@@ -24,6 +12,9 @@ return {
       vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
       vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
     end,
+    keys = {
+      { "<leader>mp", "<cmd>PeekOpen<cr>", desc = "Markdown Preview (Peek)" },
+    },
   },
   {
     "supermaven-inc/supermaven-nvim",
