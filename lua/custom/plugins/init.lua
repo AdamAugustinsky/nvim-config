@@ -4,50 +4,50 @@
 -- See the kickstart.nvim README for more information
 return {
   {
-    "toppair/peek.nvim",
-    event = { "VeryLazy" },
-    build = "deno task --quiet build:fast",
+    'toppair/peek.nvim',
+    event = { 'VeryLazy' },
+    build = 'deno task --quiet build:fast',
     config = function()
-      require("peek").setup()
-      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
-      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+      require('peek').setup()
+      vim.api.nvim_create_user_command('PeekOpen', require('peek').open, {})
+      vim.api.nvim_create_user_command('PeekClose', require('peek').close, {})
     end,
     keys = {
-      { "<leader>mp", "<cmd>PeekOpen<cr>", desc = "Markdown Preview (Peek)" },
+      { '<leader>mp', '<cmd>PeekOpen<cr>', desc = 'Markdown Preview (Peek)' },
     },
   },
   {
-    "supermaven-inc/supermaven-nvim",
+    'supermaven-inc/supermaven-nvim',
     config = function()
-      require("supermaven-nvim").setup({
+      require('supermaven-nvim').setup {
         -- You can add custom configuration options here
         keymaps = {
-          accept_suggestion = "<Tab>",
-          clear_suggestion = "<C-]>",
-          accept_word = "<C-j>",
+          accept_suggestion = '<Tab>',
+          clear_suggestion = '<C-]>',
+          accept_word = '<C-j>',
         },
         color = {
-          suggestion_color = "#ffffff",
+          suggestion_color = '#ffffff',
           cterm = 244,
         },
-        log_level = "info",
+        log_level = 'info',
         cmp = {
           enabled = true, -- Enable cmp integration
         },
-      })
-    end,
-  },
-  {
-    'pmizio/typescript-tools.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-    opts = {},
-    config = function()
-      require('typescript-tools').setup {
-        root_dir = require('lspconfig.util').root_pattern 'package.json',
-        single_file_support = false,
       }
     end,
   },
+  -- {
+  --   'pmizio/typescript-tools.nvim',
+  --   dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+  --   opts = {},
+  --   config = function()
+  --     require('typescript-tools').setup {
+  --       root_dir = require('lspconfig.util').root_pattern 'package.json',
+  --       single_file_support = false,
+  --     }
+  --   end,
+  -- },
   {
     'kdheepak/lazygit.nvim',
     cmd = {

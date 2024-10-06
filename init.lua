@@ -505,6 +505,9 @@ require('lazy').setup({
     },
   },
   { 'Bilal2453/luvit-meta', lazy = true },
+  require 'custom.plugins.deno',
+  require 'custom.plugins.vtsls',
+  --require 'custom.plugins.neoconf',
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -551,6 +554,7 @@ require('lazy').setup({
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -607,6 +611,25 @@ require('lazy').setup({
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+          local lspconfig = require 'lspconfig'
+          local is_in_deno_repo = lspconfig.util.root_pattern('deno.json', 'import_map.json', 'deno.jsonc')(vim.fn.getcwd())
+          local is_in_deno_part_of_repo = vim.fn.match(vim.fn.expand '%:p', 'supabase/functions') > -1
+
+          if not is_in_deno_repo and not is_in_deno_part_of_repo then
+            if client and client.name == 'denols' then
+              client.stop()
+              return
+            end
+          end
+          if is_in_deno_repo or is_in_deno_part_of_repo then
+            vim.cmd 'LspStart denols'
+            if client and client.name == 'vtsls' then
+              client.stop()
+              return
+            end
+          end
+
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -659,7 +682,24 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 
-      local nvim_lsp = require 'lspconfig'
+      require('deno-nvim').setup {
+        server = {
+          autostart = false,
+          capabilities = capabilities,
+          root_dir = require('lspconfig.util').root_pattern '.git',
+          settings = {
+            deno = {
+              unstable = true,
+            },
+          },
+        },
+      }
+
+      require('lspconfig.configs').vtsls = require('vtsls').lspconfig -- set default server config, optional but recommended
+
+      -- If the lsp setup is taken over by other plugin, it is the same to call the counterpart setup function
+      require('lspconfig').vtsls.setup {}
+
       local servers = {
         -- clangd = {},
         gopls = {},
@@ -694,10 +734,16 @@ require('lazy').setup({
           },
         },
 
-        prismals = {}, -- Add Prisma Language Server
-        denols = {
-          root_dir = nvim_lsp.util.root_pattern('deno.json', 'deno.jsonc'),
-        },
+        prismals = {},
+        -- denols = {
+        --   settings = {
+        --     deno = {
+        --       enable = true,
+        --       unstable = { 'cron', 'kv' },
+        --     },
+        --   },
+        --   root_dir = nvim_lsp.util.root_pattern('deno.json', 'deno.jsonc'),
+        -- },
       }
 
       -- Ensure the servers and tools above are installed
@@ -712,14 +758,14 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        'stylua',
         'biome',
         'svelte-language-server',
-        'prisma-language-server', -- Add Prisma Language Server
-        'deno',
-        'gopls', -- Ensure Go Language Server is installed
-        'tailwindcss-language-server', -- Add Tailwind CSS Language Server
-        'css-lsp', -- Add CSS Language Server
+        'prisma-language-server',
+        -- 'deno',
+        'gopls',
+        'tailwindcss-language-server',
+        'css-lsp',
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -737,6 +783,19 @@ require('lazy').setup({
         },
       }
     end,
+    opts = {
+      servers = {
+        vtsls = {
+          settings = {
+            typescript = {
+              tsserver = {
+                maxTsServerMemory = 8192,
+              },
+            },
+          },
+        },
+      },
+    },
   },
 
   { -- Autoformat
@@ -1053,4 +1112,16 @@ require('lazy').setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
---
+
+-- vim.api.nvim_create_autocmd('BufEnter', {
+--   pattern = '*.ts,*.tsx',
+--   callback = function()
+--     local cwd = vim.loop.cwd()
+--     local nvim_lsp = require 'lspconfig'
+--     local is_in_deno_repo = nvim_lsp.util.root_pattern('deno.json', 'import_map.json', 'deno.jsonc')(cwd)
+--     local is_in_deno_part_of_repo = vim.fn.match(vim.fn.expand '%:p', 'supabase/functions') > -1
+--     if is_in_deno_repo or is_in_deno_part_of_repo then
+--       vim.cmd 'LspStart denols'
+--     end
+--   end,
+-- })
