@@ -505,9 +505,9 @@ require('lazy').setup({
     },
   },
   { 'Bilal2453/luvit-meta', lazy = true },
-  require 'custom.plugins.deno',
-  require 'custom.plugins.vtsls',
-  --require 'custom.plugins.neoconf',
+  -- require 'custom.plugins.deno',
+  -- require 'custom.plugins.typescript-tools',
+  -- require 'custom.plugins.neoconf',
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -612,23 +612,22 @@ require('lazy').setup({
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-          local lspconfig = require 'lspconfig'
-          local is_in_deno_repo = lspconfig.util.root_pattern('deno.json', 'import_map.json', 'deno.jsonc')(vim.fn.getcwd())
-          local is_in_deno_part_of_repo = vim.fn.match(vim.fn.expand '%:p', 'supabase/functions') > -1
+          -- local lspconfig = require 'lspconfig'
+          -- local is_in_deno_repo = lspconfig.util.root_pattern('deno.json', 'import_map.json', 'deno.jsonc')(vim.fn.getcwd())
+          -- local is_in_deno_part_of_repo = vim.fn.match(vim.fn.expand '%:p', 'supabase/functions') > -1
 
-          if not is_in_deno_repo and not is_in_deno_part_of_repo then
-            if client and client.name == 'denols' then
-              client.stop()
-              return
-            end
-          end
-          if is_in_deno_repo or is_in_deno_part_of_repo then
-            vim.cmd 'LspStart denols'
-            if client and client.name == 'vtsls' then
-              client.stop()
-              return
-            end
-          end
+          -- if not is_in_deno_repo and not is_in_deno_part_of_repo then
+          --   if client and client.name == 'denols' then
+          --     client.stop()
+          --     return
+          --   end
+          -- end
+          -- if is_in_deno_repo or is_in_deno_part_of_repo then
+          --   if client and client.name == 'typescript-tools' then
+          --     client.stop()
+          --     return
+          --   end
+          -- end
 
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
@@ -684,9 +683,8 @@ require('lazy').setup({
 
       require('deno-nvim').setup {
         server = {
-          autostart = false,
           capabilities = capabilities,
-          root_dir = require('lspconfig.util').root_pattern '.git',
+          -- root_dir = require('lspconfig.util').root_pattern '.git',
           settings = {
             deno = {
               unstable = true,
@@ -694,11 +692,6 @@ require('lazy').setup({
           },
         },
       }
-
-      require('lspconfig.configs').vtsls = require('vtsls').lspconfig -- set default server config, optional but recommended
-
-      -- If the lsp setup is taken over by other plugin, it is the same to call the counterpart setup function
-      require('lspconfig').vtsls.setup {}
 
       local servers = {
         -- clangd = {},
@@ -716,6 +709,7 @@ require('lazy').setup({
         --
 
         svelte = {},
+        astro = {},
         tailwindcss = {},
         cssls = {},
 
@@ -763,6 +757,7 @@ require('lazy').setup({
         'svelte-language-server',
         'prisma-language-server',
         -- 'deno',
+        'astro-language-server',
         'gopls',
         'tailwindcss-language-server',
         'css-lsp',
@@ -783,19 +778,6 @@ require('lazy').setup({
         },
       }
     end,
-    opts = {
-      servers = {
-        vtsls = {
-          settings = {
-            typescript = {
-              tsserver = {
-                maxTsServerMemory = 8192,
-              },
-            },
-          },
-        },
-      },
-    },
   },
 
   { -- Autoformat
