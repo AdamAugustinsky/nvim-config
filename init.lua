@@ -612,22 +612,22 @@ require('lazy').setup({
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-          -- local lspconfig = require 'lspconfig'
-          -- local is_in_deno_repo = lspconfig.util.root_pattern('deno.json', 'import_map.json', 'deno.jsonc')(vim.fn.getcwd())
-          -- local is_in_deno_part_of_repo = vim.fn.match(vim.fn.expand '%:p', 'supabase/functions') > -1
+          local lspconfig = require 'lspconfig'
+          local is_in_deno_repo = lspconfig.util.root_pattern('deno.json', 'import_map.json', 'deno.jsonc')(vim.fn.getcwd())
+          local is_in_deno_part_of_repo = vim.fn.match(vim.fn.expand '%:p', 'supabase/functions') > -1
 
-          -- if not is_in_deno_repo and not is_in_deno_part_of_repo then
-          --   if client and client.name == 'denols' then
-          --     client.stop()
-          --     return
-          --   end
-          -- end
-          -- if is_in_deno_repo or is_in_deno_part_of_repo then
-          --   if client and client.name == 'typescript-tools' then
-          --     client.stop()
-          --     return
-          --   end
-          -- end
+          if not is_in_deno_repo and not is_in_deno_part_of_repo then
+            if client and client.name == 'denols' then
+              client.stop()
+              return
+            end
+          end
+          if is_in_deno_repo or is_in_deno_part_of_repo then
+            if client and client.name == 'typescript-tools' then
+              client.stop()
+              return
+            end
+          end
 
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
